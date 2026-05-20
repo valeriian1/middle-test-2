@@ -46,4 +46,12 @@ class RecipeTests(TestCase):
         recipes_in_context = response.context['recipes']
         self.assertEqual(len(recipes_in_context), config.RANDOM_RECIPES_LIMIT)
 
-    
+    def test_category_detail_view_success(self):
+        response = self.client.get(reverse('recipe:category_detail', kwargs={'pk': self.category.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, config.CATEGORY_DETAIL_TEMPLATE)
+        self.assertEqual(response.context['category'], self.category)
+
+    def test_category_detail_view_not_found(self):
+        response = self.client.get(reverse('recipe:category_detail', kwargs={'pk': 999}))
+        self.assertEqual(response.status_code, 404)
