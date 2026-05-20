@@ -10,22 +10,34 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env if it exists
+ENV_PATH = BASE_DIR / '.env'
+if ENV_PATH.exists():
+    with open(ENV_PATH) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                key, val = line.split('=', 1)
+                os.environ[key.strip()] = val.strip()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9jo7t)*7&hff$4x9j%37qy(o+&ywxxm@7*@b##!4#f%kxg(_-l'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-9jo7t)*7&hff$4x9j%37qy(o+&ywxxm@7*@b##!4#f%kxg(_-l')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS_RAW = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_RAW.split(',') if host.strip()]
 
 
 # Application definition
